@@ -5,8 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.roomlocaldatabase.ForeignKeys.UserWithReport
 
-class ListDataAdapter(private val dataList: List<User>):
+class ListDataAdapter(private val dataList: List<UserWithReport>):
     RecyclerView.Adapter<ListDataAdapter.ViewHolderClass>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderClass {
@@ -21,13 +22,15 @@ class ListDataAdapter(private val dataList: List<User>):
     override fun onBindViewHolder(holder: ViewHolderClass, position: Int) {
         val currentItem = dataList[position]
         holder.tvUId.text = currentItem.uid.toString()
-        holder.tvFirstName.text = currentItem.firstName.toString()
-        holder.tvLastName.text = currentItem.lastName.toString()
+        holder.tvFirstName.text = currentItem.first_name.toString()
+        holder.tvLastName.text = currentItem.last_name.toString()
+        holder.tvRole.text = currentItem.role.toString()
     }
 
     class ViewHolderClass(itemView: View): RecyclerView.ViewHolder(itemView) {
         val tvUId: TextView = itemView.findViewById(R.id.tvUId)
         val tvFirstName: TextView = itemView.findViewById(R.id.tvFirstName)
         val tvLastName: TextView = itemView.findViewById(R.id.tvLastName)
+        val tvRole: TextView = itemView.findViewById(R.id.tvRole)
     }
 }

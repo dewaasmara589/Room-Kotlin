@@ -1,6 +1,7 @@
 package com.example.roomlocaldatabase
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -11,9 +12,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import com.example.roomlocaldatabase.ForeignKeys.ReportCard
+import com.example.roomlocaldatabase.ForeignKeys.UserWithReport
 
 class MainActivity : AppCompatActivity() {
     // Cara 1 Old
@@ -47,13 +51,17 @@ class MainActivity : AppCompatActivity() {
         // Turn Off Night Mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-        // Usage Room
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "MyDatabase"
-        ).allowMainThreadQueries().build()
+        // TODO Cara 1 Use Room
+//        val db = Room.databaseBuilder(
+//            applicationContext,
+//            AppDatabase::class.java, "MyDatabase"
+//        ).allowMainThreadQueries().build()
+//
+        // TODO Initialize Room
+//        val userDao = db.userDao()
 
-        val userDao = db.userDao()
+        // TODO Initialize Singleton Room
+        val userDao = AppDatabase.getDatabase(applicationContext)?.userDao()
 
         viewAllRoomDatabase = findViewById(R.id.viewAllRoomDatabase)
         rvViewAllRoomDatabase = findViewById(R.id.rvViewAllRoomDatabase)
@@ -61,14 +69,15 @@ class MainActivity : AppCompatActivity() {
 
         btnAll = findViewById(R.id.btnAll)
         btnAll.setOnClickListener{
-            val users: List<User> = userDao.getAll()
+            val users: List<User> = userDao!!.getAll()
+            val reportCard: List<ReportCard> = userDao.getAllReportCard()
 
 
             // efek cara 1
 //        viewAllDatabase?.setText(users.toString())
 
             // efek cara 2 jika inisialisasi variable menggunakan lateinit
-            viewAllRoomDatabase.text = users.toString()
+            viewAllRoomDatabase.text = users.toString() + "\n" + reportCard.toString()
             rvViewAllRoomDatabase.visibility = View.GONE
             insertRoomDatabase.visibility = View.GONE
             viewAllRoomDatabase.visibility = View.VISIBLE
@@ -90,6 +99,8 @@ class MainActivity : AppCompatActivity() {
 //            false
 //        }
 
+        // TODO Cara 2 Use Room from AppDatabase
+
         btnAll.setOnLongClickListener(object: View.OnLongClickListener {
             override fun onLongClick(v: View?): Boolean {
                 insertRoomDatabase.visibility = View.GONE
@@ -99,9 +110,9 @@ class MainActivity : AppCompatActivity() {
                 rvViewAllRoomDatabase.layoutManager = LinearLayoutManager(applicationContext)
                 rvViewAllRoomDatabase.setHasFixedSize(true)
 
-                val getDataListUsers: List<User> = userDao.getAll()
+                val getDataListUserswithReportCard: List<UserWithReport> = userDao!!.getAllDataUserJoinReportCard()
+                rvViewAllRoomDatabase.adapter = ListDataAdapter(getDataListUserswithReportCard)
 
-                rvViewAllRoomDatabase.adapter = ListDataAdapter(getDataListUsers)
                 return true
             }
         })
@@ -122,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                 } else if (etLastName.text.toString() == "" && etLastName.text.toString().isEmpty()) {
                     etLastName.error = "Tidak Boleh Kosong !!"
                 } else {
-                    userDao.insertAll(User(firstName = etFirstName.text.toString(), lastName = etLastName.text.toString()))
+                    userDao!!.insertAll(User(firstName = etFirstName.text.toString(), lastName = etLastName.text.toString()))
                 }
             }
         }
