@@ -15,9 +15,8 @@ import com.example.roomlocaldatabase.User
     )]
 )
 data class ReportCard (
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "user_id") val userId: Int?,
     @ColumnInfo(name = "role") val role: String?,
 ){
-
+    @PrimaryKey(autoGenerate = true) var id: Int = 0
 }
